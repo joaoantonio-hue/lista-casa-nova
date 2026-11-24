@@ -32,30 +32,24 @@ function Arte({ it, grande = false }: { it: Item; grande?: boolean }) {
 function Capa({ onIniciar }: { onIniciar: () => void }) {
   return (
     <main className="capa">
-      <div className="capa-in">
-        <svg className="casa" viewBox="0 0 200 180" aria-hidden="true">
-          <g className="fumaca"><circle cx="150" cy="22" r="8" /><circle cx="160" cy="10" r="6" /></g>
-          <rect x="140" y="30" width="18" height="34" rx="3" className="chamine" />
-          <path d="M20 88 L100 24 L180 88 Z" className="telhado" />
-          <rect x="36" y="84" width="128" height="86" rx="6" className="parede" />
-          <rect x="86" y="118" width="30" height="52" rx="4" className="porta" />
-          <rect x="50" y="104" width="26" height="24" rx="4" className="janela" />
-          <rect x="126" y="104" width="26" height="24" rx="4" className="janela" />
-        </svg>
-        <p className="sobre">Lista de presentes · Casa nova</p>
-        <h1>{config.nomes}</h1>
-        <p className="texto">
-          Aos nossos amigos e amigas: nossa casa nova está ganhando vida, e separamos aqui o que ainda falta no nosso cantinho.
-          Escolha um presente, deixe seu nome e um recado, e compre na loja que preferir. Nos itens maiores, dá para ajudar com uma cota.
+      <figure className="polaroid">
+        <span className="fita" aria-hidden="true" />
+        <img src="/fotos/nos.jpg" alt="André e João" onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
+        <figcaption>nós dois, e agora uma casa</figcaption>
+      </figure>
+      <div className="carta">
+        <p className="sobre">{config.nomes}</p>
+        <h1>Vocês fazem parte da nossa história.</h1>
+        <p>
+          Cada um de vocês esteve com a gente em algum pedaço desse caminho: nas risadas, nos conselhos, nos dias difíceis e nos dias bons.
+          Agora a gente está montando o nosso cantinho, e queria que ele tivesse um pouco de vocês também.
         </p>
-        <div className="acoes">
-          <button className="btn grande" onClick={onIniciar}>Ver a lista de presentes</button>
-        </div>
-        <ol className="passos">
-          <li><b>1</b> Escolha um presente</li>
-          <li><b>2</b> Deixe seu nome e um recado</li>
-          <li><b>3</b> Compre onde preferir</li>
-        </ol>
+        <p>
+          Em cada panela, em cada café da manhã, em cada almoço de domingo, vamos lembrar de quem ajudou a construir essa casa com a gente.
+          Aqui está o que ainda falta. Escolha o que tocar o seu coração.
+        </p>
+        <p className="assinatura">com carinho, André e João</p>
+        <button className="btn grande" onClick={onIniciar}>Ajudar a montar nossa casa</button>
       </div>
     </main>
   );
@@ -111,7 +105,7 @@ function Painel({ it, onFechar, onReservar, jaReservou }: { it: Item; onFechar: 
             </div>
           ) : (
             <>
-              <span className={`selo ${cota ? "cota" : ""}`}>{cota ? "Presente coletivo" : it.comodo}</span>
+              <span className={`selo ${cota ? "cota" : ""}`}>{cota ? "Presente em conjunto" : it.comodo}</span>
               <h3>{it.nome}</h3>
               <p className="faixa">{faixa(it)}</p>
               {it.marcas && <p className="marcas"><b>Marcas e modelos:</b> {it.marcas}</p>}
@@ -122,7 +116,7 @@ function Painel({ it, onFechar, onReservar, jaReservou }: { it: Item; onFechar: 
               </div>
               {jaReservou && <p className="aviso">Você já escolheu este presente neste aparelho.</p>}
               <form className="form" onSubmit={enviar} noValidate>
-                <h4>{cota ? "Quero ajudar com uma cota" : "Quero dar este presente"}</h4>
+                <h4>{cota ? "Quero ajudar com uma parte" : "Esse presente é meu"}</h4>
                 <label>Seu nome<input value={nome} onChange={(e) => setNome(e.target.value)} maxLength={60} autoComplete="name" /></label>
                 <label>Presente<input value={it.nome} readOnly /></label>
                 {cota && (
@@ -133,7 +127,7 @@ function Painel({ it, onFechar, onReservar, jaReservou }: { it: Item; onFechar: 
                 )}
                 <label>Recado (opcional)<textarea rows={3} maxLength={300} value={recado} onChange={(e) => setRecado(e.target.value)} /></label>
                 {erro && <p className="erro">{erro}</p>}
-                <button className="btn" type="submit">{cota ? "Confirmar minha cota" : "Confirmar presente"}</button>
+                <button className="btn" type="submit">{cota ? "Confirmar minha parte" : "Confirmar presente"}</button>
               </form>
             </>
           )}
@@ -164,7 +158,7 @@ function Lista({ onVoltar }: { onVoltar: () => void }) {
       <header className="topo">
         <button className="voltar" onClick={onVoltar} aria-label="Voltar para a capa">←</button>
         <div>
-          <p className="sobre">Lista de presentes</p>
+          <p className="sobre">o que falta no nosso cantinho</p>
           <h2>{config.nomes}</h2>
         </div>
       </header>
@@ -181,8 +175,9 @@ function Lista({ onVoltar }: { onVoltar: () => void }) {
           const meu = reservas.some((r) => r.id === it.id);
           return (
             <button key={it.id} className="cartao" style={{ ["--n" as string]: Math.min(n, 16) }} onClick={() => setAberto(it)}>
+              <span className="furo" aria-hidden="true" />
               <Arte it={it} />
-              {it.tipo === "cota" && <span className="selo cota flutua">Cota</span>}
+              {it.tipo === "cota" && <span className="selo cota flutua">Em conjunto</span>}
               {meu && <span className="selo meu flutua">Você escolheu</span>}
               <span className="cartao-in">
                 <span className="nome">{it.nome}</span>
@@ -196,7 +191,7 @@ function Lista({ onVoltar }: { onVoltar: () => void }) {
       {config.pix && (
         <div className="pix">Prefere mandar um valor? Nossa chave Pix: <b>{config.pix}</b></div>
       )}
-      <footer>Os valores são aproximados. Os botões das lojas abrem a busca do produto.</footer>
+      <footer>Os valores são aproximados. Os botões das lojas abrem a busca do produto, então fique à vontade para escolher onde comprar.</footer>
       {aberto && (
         <Painel it={aberto} onFechar={() => setAberto(null)} onReservar={reservar} jaReservou={reservas.some((r) => r.id === aberto.id)} />
       )}
